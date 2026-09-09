@@ -26,38 +26,113 @@ namespace GA.Collections
 		/// </summary>
 		protected Node Head { get; set; } = null;
 
-		public int Count => throw new System.NotImplementedException();
+		public int Count { get; private set; } = 0;
 
-		public bool IsReadOnly => throw new System.NotImplementedException();
+		public virtual bool IsReadOnly => false;
 
 		public void Add(T item)
 		{
-			throw new System.NotImplementedException();
+			if (IsReadOnly)
+			{
+				throw new System.NotSupportedException("The collection is read-only.");
+			}
+
+			Node node = new Node(item);
+
+			if (Head == null)
+			{
+				Head = node;
+			}
+			else
+			{
+				Node current = Head;
+				while (current.Next != null)
+				{
+					current = current.Next;
+				}
+
+				current.Next = node;
+			}
+
+			Count++;
 		}
 
 		public void Clear()
 		{
-			throw new System.NotImplementedException();
+			if (IsReadOnly)
+			{
+				throw new System.NotSupportedException("The collection is read-only.");
+			}
+
+			Head = null;
+			Count = 0;
 		}
 
 		public bool Contains(T item)
 		{
-			throw new System.NotImplementedException();
+			Node current = Head;
+			while (current != null)
+			{
+				if (EqualityComparer<T>.Default.Equals(current.Value, item))
+				{
+					return true;
+				}
+
+				current = current.Next;
+			}
+
+			return false;
 		}
 
-		public void CopyTo(T[] array, int arrayIndex)
+		public virtual void CopyTo(T[] array, int arrayIndex)
 		{
-			throw new System.NotImplementedException();
+			throw new System.NotImplementedException("Not nesessary for this example :D");
 		}
 
 		public IEnumerator<T> GetEnumerator()
 		{
-			throw new System.NotImplementedException();
+			Node current = Head;
+			while (current != null)
+			{
+				yield return current.Value;
+				current = current.Next;
+			}
 		}
 
 		public bool Remove(T item)
 		{
-			throw new System.NotImplementedException();
+			if (IsReadOnly)
+			{
+				throw new System.NotSupportedException("This collection is read-only");
+			}
+
+			Node current = Head;
+			Node previous = null;
+
+			while (current != null)
+			{
+				if (EqualityComparer<T>.Default.Equals(current.Value, item))
+				{
+					if (previous != null)
+					{
+						// Removing any other element than the first.
+						previous.Next = current.Next;
+					}
+					else
+					{
+						// Removing the first element.
+						Head = current.Next;
+					}
+
+					Count--;
+					return true;
+				}
+
+				previous = current;
+				current = current.Next;
+			}
+
+			return false;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
