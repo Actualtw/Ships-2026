@@ -9,15 +9,17 @@ namespace GA.Collections
 		{
 			public T Value { get; set; }
 			public Node Next { get; set; }
+			public Node Previous { get; set; }
 
 			public Node() : this(default(T))
 			{
 			}
 
-			public Node(T value, Node next = null)
+			public Node(T value, Node next = null, Node previous = null)
 			{
 				Value = value;
 				Next = next;
+				Previous = previous;
 			}
 		}
 
@@ -25,6 +27,11 @@ namespace GA.Collections
 		/// The head of the linked list. When the list is empty, this will be null.
 		/// </summary>
 		protected Node Head { get; set; } = null;
+
+		/// <summary>
+		/// The tail of the linked list. When the list is empty, this will be null
+		/// </summary>
+		protected Node Tail { get; set; } = null;
 
 		public int Count { get; private set; } = 0;
 
@@ -42,16 +49,13 @@ namespace GA.Collections
 			if (Head == null)
 			{
 				Head = node;
+				Tail = node;
 			}
 			else
 			{
-				Node current = Head;
-				while (current.Next != null)
-				{
-					current = current.Next;
-				}
-
-				current.Next = node;
+				Tail.Next = node;
+				node.Previous = Tail;
+				Tail = node;
 			}
 
 			Count++;
@@ -65,6 +69,7 @@ namespace GA.Collections
 			}
 
 			Head = null;
+			Tail = null;
 			Count = 0;
 		}
 
@@ -107,28 +112,42 @@ namespace GA.Collections
 			}
 
 			Node current = Head;
-			Node previous = null;
 
 			while (current != null)
 			{
 				if (EqualityComparer<T>.Default.Equals(current.Value, item))
 				{
-					if (previous != null)
+					if (current == Head)
 					{
-						// Removing any other element than the first.
-						previous.Next = current.Next;
+						// Removing the first element
+						Head = current.Next;
+
+						if (Head != null)
+						{
+							Head.Previous = null;
+						}
+						else
+						{
+							Tail = null;
+						}
+					}
+					else if (current == Tail)
+					{
+						// Removing the last element
+						Tail = current.Previous;
+						Tail.Next = null;
 					}
 					else
 					{
-						// Removing the first element.
-						Head = current.Next;
+						// Removing any other element
+						current.Previous.Next = current.Next;
+						current.Next.Previous = current.Previous;
 					}
 
 					Count--;
 					return true;
 				}
 
-				previous = current;
 				current = current.Next;
 			}
 
@@ -139,6 +158,5 @@ namespace GA.Collections
 		{
 			return GetEnumerator();
 		}
-
 	}
 }
