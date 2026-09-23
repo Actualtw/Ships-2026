@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c6g22t7q8wmpx" path="res://Scenes/LevelObjects/Rock1.tscn" id="7_rpty4"]
 [ext_resource type="PackedScene" uid="uid://dal2ry4e6ijio" path="res://Scenes/LevelObjects/Rock2.tscn" id="8_6jj8j"]
 [ext_resource type="PackedScene" uid="uid://gb82qf7sjrcg" path="res://Scenes/LevelObjects/Rock3.tscn" id="9_06um6"]
-[ext_resource type="Script" uid="uid://birkqp8gwgu3p" path="res://Scenes/Pathfinding/NavigationGrid.cs" id="10_bdlbp"]
+[ext_resource type="Script" uid="uid://dw0x1ywrm177y" path="res://Code/Pathfinding/NavigationGrid.cs" id="10_bdlbp"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_3vykb"]
 
