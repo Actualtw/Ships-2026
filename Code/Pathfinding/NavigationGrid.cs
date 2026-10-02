@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using GA.Common;
+using System.Collections.Generic;
 
 namespace GA.Ships.Pathfinding
 {
@@ -38,6 +39,7 @@ namespace GA.Ships.Pathfinding
         {
             // Initialize the grid.
             BuildGraph();
+            RefreshDebugGrid();
         }
 
         private void BuildGraph()
@@ -116,6 +118,69 @@ namespace GA.Ships.Pathfinding
             }
 
             return cost;
+        }
+
+        /// <summary>
+        /// Returns a cell which is in coordinates worldPosition (in global space)
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public Cell GetCell(Vector3 worldPosition)
+        {
+            if (_cells == null || _cells.Length == 0)
+            {
+                throw new InvalidOperationException("The grid has not been built yet.");
+            }
+
+            Vector3 localPosition = ToLocal(worldPosition);
+            float positionX = localPosition.X + (Width * CellSize * 0.5f);
+            float positionY = localPosition.Z + (Height * CellSize * 0.5f);
+            int x = Mathf.Clamp(Mathf.FloorToInt(positionX / CellSize), 0, Width - 1);
+            int y = Mathf.Clamp(Mathf.FloorToInt(positionY / CellSize), 0, Height - 1);
+
+            return _cells[x, y];
+        }
+
+        public IList<Cell> GetNeighbours(Cell cell, bool includeDiagonal)
+        {
+            bool useDiagonal = includeDiagonal && PathfindingConfig.AllowDiagonalPathfinding;
+
+            IList<Cell> neighbours = new List<Cell>(useDiagonal ? 8 : 4);
+
+            for (int offsetX = -1; offsetX <= 1; offsetX++)
+            {
+                for (int offsetY = -1; offsetY <= 1; offsetY++)
+                {
+                    if (offsetX == 0 && offsetY == 0)
+                    {
+                        // The cell itself. Ignore.
+                        continue;
+                    }
+
+                    if (!useDiagonal && Mathf.Abs(offsetX) == Mathf.Abs(offsetY))
+                    {
+                        continue;
+                    }
+
+                    int candidateX = cell.X + offsetX;
+                    int candidateY = cell.Y + offsetY;
+
+                    if (candidateX < 0 || candidateY < 0 || candidateX >= Width || candidateY >= Height)
+                    {
+                        continue;
+                    }
+
+                    Cell neighbour = _cells[candidateX, candidateY];
+
+                    if (neighbour.IsWalkable)
+                    {
+                        neighbours.Add(neighbour);
+                    }
+                }
+            }
+
+            return neighbours;
         }
 
         #region  Debug draw
