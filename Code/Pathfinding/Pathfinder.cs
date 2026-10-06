@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -66,6 +67,65 @@ namespace GA.Ships.Pathfinding
 
             // There is no path between start and end positions.
             return null;
+        }
+
+        /// <summary>
+        /// Finds all reachable cells from the start cell within a given number of steps.
+        /// </summary>
+        /// <param name="start">The starting cell</param>
+        /// <param name="maxSteps">Maximum number of steps to explore</param>
+        /// <returns>Reachable cells</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public IList<Cell> GetReachableCells(Cell start, int maxSteps)
+        {
+            if (start == null)
+            {
+                throw new ArgumentNullException($"{nameof(start)} cannot be null");
+            }
+
+            if (maxSteps < 0)
+            {
+                throw new InvalidOperationException($"{nameof(maxSteps)} cannot be lower than 0");
+            }
+
+            Queue<Cell> frontier = new Queue<Cell>();
+            Dictionary<Cell, int> steps = new Dictionary<Cell, int>();
+            IList<Cell> reachableCells = new List<Cell>();
+
+            frontier.Enqueue(start);
+            steps[start] = 0;
+            reachableCells.Add(start);
+
+            // Perform a breadth-first search to find all reachable cells within the maxSteps limit
+            while (frontier.Count > 0)
+            {
+                Cell current = frontier.Dequeue();
+                int currentSteps = steps[current];
+
+                if (currentSteps >= maxSteps)
+                {
+                    continue;
+                }
+
+                IList<Cell> neighbours = _grid.GetNeighbours(current, includeDiagonal: false);
+
+                foreach (Cell neighbour in neighbours)
+                {
+                    if (steps.ContainsKey(neighbour))
+                    {
+                        continue;
+                    }
+
+                    int neighbourSteps = currentSteps + 1;
+
+                    steps[neighbour] = neighbourSteps;
+                    frontier.Enqueue(neighbour);
+                    reachableCells.Add(neighbour);
+                }
+            }
+
+            return reachableCells;
         }
 
         private IList<Vector3> ConstructPath(Cell startCell, Cell endCell, Dictionary<Cell, Cell> cameFrom)
