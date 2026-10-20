@@ -9,10 +9,27 @@ namespace GA.Ships.Pathfinding
 {
     public class Pathfinder
     {
+        public class FrontierEntry : IComparable<FrontierEntry>
+        {
+            public Cell Cell { get; }
+            public int TotalCost { get; }
+
+            public FrontierEntry(Cell cell, int totalCost)
+            {
+                Cell = cell;
+                TotalCost = totalCost;
+            }
+
+            public int CompareTo(FrontierEntry other)
+            {
+                return other == null ? -1 : TotalCost.CompareTo(other.TotalCost);
+            }
+        }
+
         private NavigationGrid _grid = null;
 
         // Cells, which will be inspected.
-        private PriorityQueue<Cell> _frontier = new PriorityQueue<Cell>();
+        private PriorityQueue<FrontierEntry> _frontier = new PriorityQueue<FrontierEntry>();
 
         // Cells which have been inspected already.
         private HashSet<Cell> _visited = new HashSet<Cell>();
@@ -175,17 +192,24 @@ namespace GA.Ships.Pathfinding
 
             _frontier.Clear();
             _visited.Clear();
+            _grid.ResetPathData();
 
             startCell.Parent = null;
             startCell.GCost = 0; // At the beginning the cost is 0. We haven't travelled anywhere yet.
             startCell.HCost = 0; // Has to be zeroed if A* was used between two Djikstra calls.
 
-            _frontier.Enqueue(startCell);
+            _frontier.Enqueue(new FrontierEntry(startCell, 0));
 
             while (_frontier.Count > 0)
             {
-                Cell current = _frontier.Dequeue();
-                _visited.Add(current);
+                FrontierEntry entry = _frontier.Dequeue();
+                Cell current = entry.Cell;
+
+                if (!_visited.Add(current))
+                {
+                    //Outdated entry. The cell was already processed through a cheaper route.
+                    continue;
+                }
 
                 if (current == endCell)
                 {
@@ -216,15 +240,15 @@ namespace GA.Ships.Pathfinding
                     // The total cost of the path so far
                     int costSoFar = current.GCost + costToNeighbour;
 
-                    // The neighbour hasn't been inspected yet or there is a better path to neighbour
-                    if (!_frontier.Contains(neighbour) || costSoFar < neighbour.GCost)
+                    // If there is a better path to neighbour
+                    if (costSoFar < neighbour.GCost)
                     {
                         // Update the cost to the neighbour from the current cell.
                         neighbour.GCost = costSoFar;
                         neighbour.HCost = 0;
 
                         // Add to the frontier in order to process its neighbours
-                        _frontier.Enqueue(neighbour);
+                        _frontier.Enqueue(new FrontierEntry(neighbour, costSoFar));
 
                         // It's cheapest to navigate to this neighbour from the current cell.
                         neighbour.Parent = current;

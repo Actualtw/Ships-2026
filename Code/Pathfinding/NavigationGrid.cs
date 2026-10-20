@@ -212,6 +212,21 @@ namespace GA.Ships.Pathfinding
             return destination.Cost * multiplier;
         }
 
+        public void ResetPathData()
+        {
+            if (_cells == null || _cells.Length == 0)
+            {
+                return;
+            }
+
+            foreach (Cell cell in _cells)
+            {
+                cell.Parent = null;
+                cell.GCost = int.MaxValue;
+                cell.HCost = 0;
+            }
+        }
+
         #region  Debug draw
         private void RefreshDebugGrid()
 		{
@@ -329,7 +344,7 @@ namespace GA.Ships.Pathfinding
             /// Full Cost.
             /// Total (estimated) cost of the path.
             /// </summary>
-            public int FCost => GCost + HCost;
+            public int FCost => GCost == int.MaxValue ? int.MaxValue : GCost + HCost;
 
             public Cell(int x, int y, Vector3 worldPosition, int cost)
             {
