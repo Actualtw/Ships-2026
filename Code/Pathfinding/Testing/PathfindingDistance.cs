@@ -16,7 +16,7 @@ namespace GA.Ships.Pathfinding.Testing
         private void PerformDistanceTest()
         {
             NavigationGrid.Cell startCell = Level.Current.Grid.GetCell(GlobalPosition);
-            var cells = Level.Current.Pathfinder.GetReachableCells(startCell, _distance);
+            var cells = Level.Current.Pathfinder.GetReachableCells(startCell, _distance, _includeDiagonals);
             Level.Current.Grid.SetHighlightedCells(cells);
         }
     }

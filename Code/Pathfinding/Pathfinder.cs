@@ -258,6 +258,112 @@ namespace GA.Ships.Pathfinding
 
             return RetracePath(startCell, endCell);
         }
+
+        /// <summary>
+        /// Finds all reachable cells from the start cell within a given number of movement points.
+        /// This method uses Dijkstra's algorithm to explore the grid and determine which cells can be reached
+        /// without exceeding the specified movement points.
+        /// </summary>
+        /// <param name="start">the starting cell</param>
+        /// <param name="maxMovementPoints">the maximum number of movement points available</param>
+        /// <param name="useDiagonals">is diagonal movement allowed</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public IList<Cell> GetReachableCells(Cell start, int maxMovementPoints, bool useDiagonals)
+        {
+            if (start == null)
+            {
+                throw new ArgumentNullException($"{nameof(start)} cannot be null");
+            }
+
+            if (maxMovementPoints < 0)
+            {
+                throw new InvalidOperationException($"{nameof(maxMovementPoints)} cannot be lower than 0");
+            }
+
+            if (!start.IsWalkable)
+            {
+                throw new ArgumentException($"{nameof(start)} must be walkable");
+            }
+
+            _frontier.Clear();
+            _visited.Clear();
+            _grid.ResetPathData();
+
+            IList<Cell> reachableCells = new List<Cell>();
+
+            start.Parent = null;
+            start.GCost = 0;
+            start.HCost = 0;
+
+            _frontier.Enqueue(new FrontierEntry(start, 0));
+
+            while (_frontier.Count > 0)
+            {
+                FrontierEntry entry = _frontier.Dequeue();
+                Cell current = entry.Cell;
+
+                if (!_visited.Add(current))
+                {
+                    //Outdated entry. The cell was already processed through a cheaper route.
+                    continue;
+                }
+
+                if (entry.TotalCost > maxMovementPoints)
+                {
+                    // Early exit.
+                    // The cheapest route to this cell exceeds movement points.
+                    break;
+                }
+
+                if (current != start)
+                {
+                    // Add the current cell to the list of reachable cells, excluding the start cell.
+                    reachableCells.Add(current);
+                }
+
+                IList<Cell> neighbours = _grid.GetNeighbours(current, useDiagonals);
+
+                foreach (Cell neighbour in neighbours)
+                {
+                    if (!neighbour.IsWalkable || _visited.Contains(neighbour))
+                    {
+                        // Skip this neighbour if it's not walkable or if it has been already visited.
+                        continue;
+                    }
+
+                    int movementCost = _grid.GetCostToNeighbour(current, neighbour);
+
+                    if (movementCost <= 0)
+                    {
+                        continue;
+                    }
+
+                    // The total cost of the path so far
+                    int newMovementCost = current.GCost + movementCost;
+
+                    if (newMovementCost > maxMovementPoints)
+                    {
+                        // Skip this neighbour if the total cost exceeds the maximum movement points.
+                        continue;
+                    }
+
+                    if (newMovementCost < neighbour.GCost)
+                    {
+                        neighbour.GCost = newMovementCost;
+                        neighbour.HCost = 0;
+
+                        _frontier.Enqueue(new FrontierEntry(neighbour, newMovementCost));
+
+                        neighbour.Parent = current;
+                    }
+                }
+            }
+
+            return reachableCells;
+        }
         #endregion
 
         #region A*
