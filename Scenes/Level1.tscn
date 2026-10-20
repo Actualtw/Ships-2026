@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://bi28idaw4k43y" path="res://Art/Models/GLB format/grass-patch.glb" id="12_6jj8j"]
 [ext_resource type="Script" uid="uid://dor5y7e8a4ubd" path="res://Code/Pathfinding/NavigationObject.cs" id="13_06um6"]
 [ext_resource type="Script" uid="uid://dk2xdb5406g73" path="res://Code/Pathfinding/PrototypeSeeker.cs" id="14_ubfni"]
+[ext_resource type="Resource" uid="uid://ct50ivg3y3mii" path="res://Data/SimplifyPath.tres" id="15_0wsr5"]
 [ext_resource type="Script" uid="uid://bxf323gmb80ay" path="res://Code/Pathfinding/PathDebugDrawer.cs" id="15_ug0sv"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_3vykb"]
@@ -607,8 +608,9 @@ Priority = 10
 [node name="PrototypeSeeker" type="Node3D" parent="." unique_id=953630881 node_paths=PackedStringArray("_targetNode")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.506182)
 script = ExtResource("14_ubfni")
-_algorithm = 2
+_algorithm = 3
 _targetNode = NodePath("Target")
+_postProcessors = Array[Resource]([ExtResource("15_0wsr5")])
 
 [node name="Target" type="Node3D" parent="PrototypeSeeker" unique_id=40865722]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.150726, 0, -39.464706)
