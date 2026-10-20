@@ -16,6 +16,7 @@
 [ext_resource type="Script" uid="uid://dk2xdb5406g73" path="res://Code/Pathfinding/PrototypeSeeker.cs" id="14_ubfni"]
 [ext_resource type="Resource" uid="uid://ct50ivg3y3mii" path="res://Data/SimplifyPath.tres" id="15_0wsr5"]
 [ext_resource type="Script" uid="uid://bxf323gmb80ay" path="res://Code/Pathfinding/PathDebugDrawer.cs" id="15_ug0sv"]
+[ext_resource type="Script" uid="uid://cmm40st01srd6" path="res://Code/Pathfinding/Testing/PathfindingDistance.cs" id="17_0wsr5"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_3vykb"]
 
@@ -459,6 +460,11 @@ DrawDebugGrid = true
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1385627526]
 transform = Transform3D(1, 0, 0, 0, -0.11524884, 0.9933367, 0, -0.9933367, -0.11524884, 0, 11.518807, -47.70407)
+
+[node name="DistanceTest" type="Node3D" parent="." unique_id=2102251395]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.01523, 0, -12.2605095)
+script = ExtResource("17_0wsr5")
+_distance = 50
 
 [node name="Shallow1" type="Area3D" parent="." unique_id=1692232102]
 
