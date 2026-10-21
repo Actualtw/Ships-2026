@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b6qiay8vves60" path="res://Scenes/Level.cs" id="1_2h8qs"]
 [ext_resource type="Shader" uid="uid://dx4twvubxah28" path="res://Shaders/Water.gdshader" id="1_q12u6"]
+[ext_resource type="PackedScene" uid="uid://bprh4mkm82u83" path="res://Scenes/Ships/PlayerShip.tscn" id="2_0wsr5"]
 [ext_resource type="Material" uid="uid://dphq8pe50k7d8" path="res://Art/Rocks/Rocks022_1K-PNG.tres" id="2_joc8x"]
 [ext_resource type="Texture2D" uid="uid://c2dkki4dqclrm" path="res://Art/Sky/Epic_BlueSunset_EquiRect_flat.png" id="3_joc8x"]
 [ext_resource type="PackedScene" uid="uid://caq3f85l6qtpy" path="res://Scenes/LevelObjects/GrassyIsland.tscn" id="4_kylad"]
@@ -12,11 +13,13 @@
 [ext_resource type="PackedScene" uid="uid://gb82qf7sjrcg" path="res://Scenes/LevelObjects/Rock3.tscn" id="9_06um6"]
 [ext_resource type="Script" uid="uid://birkqp8gwgu3p" path="res://Code/Pathfinding/NavigationGrid.cs" id="10_bdlbp"]
 [ext_resource type="PackedScene" uid="uid://bi28idaw4k43y" path="res://Art/Models/GLB format/grass-patch.glb" id="12_6jj8j"]
+[ext_resource type="Script" uid="uid://0klwgl46q0ya" path="res://Code/FollowCamera.cs" id="12_yji5v"]
 [ext_resource type="Script" uid="uid://dor5y7e8a4ubd" path="res://Code/Pathfinding/NavigationObject.cs" id="13_06um6"]
 [ext_resource type="Script" uid="uid://dk2xdb5406g73" path="res://Code/Pathfinding/PrototypeSeeker.cs" id="14_ubfni"]
 [ext_resource type="Resource" uid="uid://ct50ivg3y3mii" path="res://Data/SimplifyPath.tres" id="15_0wsr5"]
 [ext_resource type="Script" uid="uid://bxf323gmb80ay" path="res://Code/Pathfinding/PathDebugDrawer.cs" id="15_ug0sv"]
 [ext_resource type="Script" uid="uid://cmm40st01srd6" path="res://Code/Pathfinding/Testing/PathfindingDistance.cs" id="17_0wsr5"]
+[ext_resource type="PackedScene" uid="uid://t28oc6yqfvp2" path="res://Scenes/Ships/EnemyShip.tscn" id="19_q1ws5"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_3vykb"]
 
@@ -456,10 +459,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50.04512, 0, -40.84346)
 [node name="NavigationGrid" type="Node3D" parent="." unique_id=1547683577]
 script = ExtResource("10_bdlbp")
 GridSize = Vector2i(100, 100)
-DrawDebugGrid = true
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1385627526]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1385627526 node_paths=PackedStringArray("_target")]
 transform = Transform3D(1, 0, 0, 0, -0.11524884, 0.9933367, 0, -0.9933367, -0.11524884, 0, 11.518807, -47.70407)
+script = ExtResource("12_yji5v")
+_target = NodePath("../SmallShip")
+_maxDistance = 24.0
+_elevationAngle = -45.0
+_yawAngle = 0.0
 
 [node name="DistanceTest" type="Node3D" parent="." unique_id=2102251395]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.01523, 0, -12.2605095)
@@ -624,3 +631,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.150726, 0, -39.464706)
 [node name="PathVisualizer" type="Node3D" parent="PrototypeSeeker" unique_id=416392666]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.506182)
 script = ExtResource("15_ug0sv")
+
+[node name="SmallShip" parent="." unique_id=961744223 instance=ExtResource("2_0wsr5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.31455708, 0)
+
+[node name="SmallPirateShip" parent="." unique_id=1374617153 instance=ExtResource("19_q1ws5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.116636, -0.4768796, -28.207329)

@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bprh4mkm82u83"]
+
+[ext_resource type="PackedScene" uid="uid://brkg6cooepb7r" path="res://Art/Models/GLB format/ship-small.glb" id="1_v5ojx"]
+[ext_resource type="Script" uid="uid://b46noub0dieej" path="res://Code/Ship/ShipVisual.cs" id="2_khmyu"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_17dm1"]
+radius = 2.293457
+height = 7.666748
+
+[node name="SmallShip" unique_id=961744223 instance=ExtResource("1_v5ojx")]
+
+[node name="ship-small" parent="." index="0" unique_id=809019470]
+script = ExtResource("2_khmyu")
+_floatAmplitude = 0.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1" unique_id=1573032142]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 2.1445298, -0.13151836)
+shape = SubResource("CapsuleShape3D_17dm1")
+debug_color = Color(0.8301465, 0.12740013, 0.8971605, 0.41960785)
