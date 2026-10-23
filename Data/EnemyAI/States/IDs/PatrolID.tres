@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="AIStateID" format=3 uid="uid://vsdy5obma0i6"]
+
+[ext_resource type="Script" uid="uid://cos4afpa8hw0m" path="res://Code/Ship/EnemyAI/AIStateID.cs" id="1_g2yox"]
+
+[resource]
+script = ExtResource("1_g2yox")
+metadata/_custom_type_script = "uid://cos4afpa8hw0m"

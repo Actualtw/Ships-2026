@@ -7,7 +7,7 @@ namespace GA.Ships
         [Export] private Node3D _target = null;
         [Export] private float _maxDistance = 12f;
         [Export(PropertyHint.Range, "-90, 0, -45")] private float _elevationAngle = 25f;
-        [Export(PropertyHint.Range, "-90, 90 ,0")] private float _yawAngle = 45f;
+        [Export(PropertyHint.Range, "-90, 90 , 0")] private float _yawAngle = 45f;
         [Export(PropertyHint.Range, "0, 1, 0")] private float _zoom = 0f;
         [Export] private float _smoothSpeed = 6f;
         [Export] private float _zoomStep = 0.1f;

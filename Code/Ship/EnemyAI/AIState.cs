@@ -1,0 +1,73 @@
+using Godot;
+
+namespace GA.Ships
+{
+    [GlobalClass]
+    public partial class AIState : Resource
+    {
+        [Export] public AIStateID ID { get; private set; } = null;
+        [Export] public AIActionBase[] EnterActions { get; private set; } = new AIActionBase[0];
+        [Export] public AIActionBase[] RunActions { get; private set; } = new AIActionBase[0];
+        [Export] public AIActionBase[] ExitActions { get; private set; } = new AIActionBase[0];
+        [Export] public AITransition[] Transitions { get; private set; } = new AITransition[0];
+
+        /// <summary>
+        /// Run when the state is activated.
+        /// </summary>
+        /// <param name="ship">Owner ship</param>
+        public void EnterState(EnemyShip ship)
+        {
+            foreach (var action in EnterActions)
+            {
+                action.Act(ship);
+            }
+        }
+
+        /// <summary>
+        /// Run when the state is deactivated
+        /// </summary>
+        /// <param name="ship">Owner ship</param>
+        public void ExitState(EnemyShip ship)
+        {
+            foreach (var action in ExitActions)
+            {
+                action.Act(ship);
+            }
+        }
+
+        /// <summary>
+        /// Run every frame when the state is active
+        /// </summary>
+        /// <param name="ship">Owner ship</param>
+        /// <param name="deltaTime">The time since the last frame</param>
+        public void UpdateState(EnemyShip ship, float deltaTime)
+        {
+            PerformActions(ship, deltaTime);
+            AIStateID targetStateID = TryTransitioning(ship);
+        }
+
+        public void PerformActions(EnemyShip ship, float deltaTime)
+        {
+            foreach (var action in RunActions)
+            {
+                action.Act(ship, deltaTime);
+            }
+        }
+
+        private AIStateID TryTransitioning(EnemyShip ship)
+        {
+            foreach (var transition in Transitions)
+            {
+                bool decision = transition.Condition.Decide(ship);
+
+                if (decision)
+                {
+                    // TODO: Try to perform transition. Continue if fails.
+                    return transition.TargetStateID;
+                }
+            }
+
+            return null;
+        }
+    }
+}
