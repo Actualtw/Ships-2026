@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GA.Common;
+using GA.Ships.Pathfinding;
 using Godot;
 
 namespace GA.Ships
@@ -7,8 +8,6 @@ namespace GA.Ships
     public partial class EnemyShip : ShipBase
     {
         [Export] private PatrolPath _patrolPath = null;
-
-        private List<Vector3> _pathfindingPath = null;
 
         private ITarget _target = null;
 
@@ -19,14 +18,34 @@ namespace GA.Ships
 
         public PatrolPath PatrolPath => _patrolPath;
 
-        public bool IsPathValid
+        #region Pathfinding
+        private float _pathfindingTimer = 0.0f;
+
+        // Path retruned by the pathfinder to the target.
+        private List<Vector3> _pathfindingPath = null;
+        [Export] private PathPostProcessorResource[] _pathPostprocessors = null;
+
+        #endregion Pathfinding
+
+        public bool IsPatrolPathValid
         {
             get => _patrolPath != null && _patrolPath.Length > 0;
+        }
+
+        public bool IsPathfindingPathValid
+        {
+            get => _pathfindingPath != null && _pathfindingPath.Count > 0;
         }
 
         public int CurrentWaypointIndex { get; set; } = 0;
 
         public IReadOnlyList<Vector3> PathfindingPath => _pathfindingPath;
+
+        public float PathfindingTimer
+        {
+            get => _pathfindingTimer;
+            set => _pathfindingTimer = value;
+        }
 
         public ITarget Target
         {
@@ -35,6 +54,18 @@ namespace GA.Ships
             {
                 _target = value;
                 // TODO: Add data validation
+            }
+        }
+
+        public Vector3 CurrentPathfindingTarget
+        {
+            get
+            {
+                return IsPathfindingPathValid
+                    ? _pathfindingPath[0]
+                    : Target != null
+                        ? Target.TargetPosition
+                        : GlobalPosition;
             }
         }
 
@@ -54,22 +85,59 @@ namespace GA.Ships
             }
         }
 
-        public void SetPatrolPath(PatrolPath path)
+        public void SetPatrolPath(PatrolPath patrolPath)
         {
-            if (path != null)
+            if (patrolPath != null)
             {
-                _patrolPath = path;
+                _patrolPath = patrolPath;
             }
+        }
+
+        public void SetPathfindingPath(IList<Vector3> pathfindingPath)
+        {
+            _pathfindingPath.Clear();
+
+            if (pathfindingPath == null || pathfindingPath.Count == 0)
+            {
+                GD.PushWarning("No path provided for the enemy ship!");
+                return;
+            }
+
+            if (_pathPostprocessors != null)
+            {
+                foreach (var postprocessor in _pathPostprocessors)
+                {
+                    if (postprocessor != null)
+                    {
+                        pathfindingPath = postprocessor.PostProcess(pathfindingPath);
+                    }
+                }
+            }
+
+            foreach (Vector3 cellPosition in pathfindingPath)
+            {
+                _pathfindingPath.Add(cellPosition);
+            }
+
+            // TODO: Draw path for debugging
         }
 
         public void AdvancePatrolIndex()
         {
-            if (!IsPathValid)
+            if (!IsPatrolPathValid)
             {
                 return;
             }
 
             CurrentWaypointIndex = _patrolPath.GetNextIndex(CurrentWaypointIndex);
+        }
+
+        public void AdvancePathfindingPathTarget()
+        {
+            if (_pathfindingPath != null && _pathfindingPath.Count > 0)
+            {
+                _pathfindingPath.RemoveAt(0);
+            }
         }
     }
 }
